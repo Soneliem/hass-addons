@@ -1,0 +1,23 @@
+{
+  "name": "snodeb-example",
+  "version": "1.0.0",
+  "description": "Example service for snodeb",
+  "type": "module",
+  "private": true,
+  "module": "dist/index.mjs",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.mjs",
+    "build": "pkgroll",
+    "lint": "biome check src/ --fix",
+    "format": "biome format src/ --fix"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.2",
+    "@types/node": "^24.3.0",
+    "pkgroll": "^2.15.3",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  }
+}

@@ -6,7 +6,7 @@
 ![Supports armv7 Architecture][armv7-shield]
 ![Supports i386 Architecture][i386-shield]
 
-_Capture Home Assistant dashboards and serve optimized images for e-paper displays._
+Capture Home Assistant dashboards and serve optimized images for e-paper displays.
 
 ## About
 
@@ -29,17 +29,6 @@ Dashboard2EPaper is a Home Assistant add-on that captures screenshots of your da
 4. Start the add-on
 
 ## Configuration
-
-```yaml
-dashboard_url: "http://supervisor/core/api/panel_custom/dashboard"
-update_interval: 5
-display_width: 800
-display_height: 600
-dithering: true
-contrast_adjustment: 1.0
-access_token: ""
-log_level: "info"
-```
 
 ### Option Details
 

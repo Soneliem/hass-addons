@@ -1,0 +1,1 @@
+console.log('Dashboard to ePaper Add-on');
