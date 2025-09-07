@@ -14,25 +14,38 @@ ports:
   5000/tcp: 5000
 ports_description:
   5000/tcp: "HTTP API for e-paper device integration"
-# map:
-#   - type: addon_config
-#     read_only: false
 options:
-  dashboard_url: "http://supervisor/core/api/panel_custom/dashboard"
-  update_interval: 5
-  display_width: 800
-  display_height: 600
-  dithering: true
-  contrast_adjustment: 1.0
+  base_url: "http://192.168.1.203:8123"
+  screens:
+    - id: "dashboard1"
+      path: "/dashboard-dashboard/0?kiosk"
+      update_interval: 60
+      width: 800
+      height: 600
+      rotation: 0
+      scaling: 1.0
+      rendering_delay: 0
+      prefers_color_scheme: "light"
   access_token: ""
-  log_level: "info"
+  language: "en"
+  rendering_timeout: 60
+  browser_launch_timeout: 30
+  ignore_certificate_errors: false
 schema:
-  dashboard_url: "url"
-  update_interval: "int(1,1440)"
-  display_width: "int(100,2000)"
-  display_height: "int(100,2000)"
-  dithering: "bool"
-  contrast_adjustment: "float(0.1,3.0)"
-  access_token: "str?"
-  log_level: "list(debug|info|warn|error)"
-# image: "ghcr.io/Soneliem/{arch}-addon-dashboard2epaper"
+  base_url: "url"
+  screens:
+    - id: "str"
+      path: "str"
+      update_interval: "int(5,)"
+      width: "int(1,)"
+      height: "int(1,)"
+      rotation: "int(0,360)"
+      scaling: "float(0.1,5.0)"
+      rendering_delay: "int(0,)"
+      prefers_color_scheme: "list(light|dark)"
+  access_token: "str"
+  language: "str"
+  rendering_timeout: "int(5,300)"
+  browser_launch_timeout: "int(5,120)"
+  ignore_certificate_errors: "bool"
+image: "ghcr.io/Soneliem/hass-addons-dashboard2epaper-{arch}"

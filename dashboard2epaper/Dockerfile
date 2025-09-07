@@ -1,7 +1,8 @@
-ARG BUILD_FROM
+ARG BUILD_FROM=alpine
 # Builder stage
 FROM $BUILD_FROM AS builder
 
+# Install build dependencies
 RUN apk add --no-cache nodejs-current npm
 
 # Copy package files and source code
@@ -21,8 +22,8 @@ RUN npm prune --production
 # Runner stage
 FROM $BUILD_FROM AS runner
 
-# Install only nodejs runtime (no npm needed)
-RUN apk add --no-cache nodejs-current
+# Install dependencies
+RUN apk add --no-cache nodejs-current chromium
 
 WORKDIR /app
 
@@ -31,8 +32,4 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
-# Copy data for add-on
-COPY run.sh /
-RUN chmod a+x /run.sh
-
-CMD [ "/run.sh" ]
+CMD [ "node", "dist/index.mjs" ]
