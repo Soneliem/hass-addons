@@ -1,5 +1,5 @@
 import { setTimeout } from "node:timers/promises";
-import puppeteer, { type Browser } from "puppeteer-core";
+import puppeteer, { type Browser, type Page } from "puppeteer-core";
 import sharp from "sharp";
 import { getSetting } from "./config";
 import type { Screen } from "./types";
@@ -48,7 +48,7 @@ export async function initializeBrowser(): Promise<void> {
     defaultViewport: null,
     timeout: browserLaunchTimeout,
     headless: true,
-    executablePath: "/usr/bin/chromium-browser"
+    executablePath: "/usr/bin/chromium-browser",
   });
 
   // Handle browser disconnection
@@ -64,8 +64,8 @@ export async function initializeBrowser(): Promise<void> {
   };
 
   console.log(`Visiting '${baseUrl}' to login...`);
-  let loginPage = await browser.newPage();
-  
+  const loginPage = await browser.newPage();
+
   try {
     await loginPage.goto(baseUrl, {
       waitUntil: "domcontentloaded",
@@ -76,7 +76,7 @@ export async function initializeBrowser(): Promise<void> {
     await setTimeout(1000);
 
     console.log("Adding authentication entry to browser's local storage...");
-    
+
     // Check if page is still available before executing JavaScript
     if (!loginPage.isClosed()) {
       await loginPage.evaluate(
@@ -110,7 +110,7 @@ export async function takeScreenshot(screen: Screen): Promise<Buffer | null> {
   const renderingTimeout = getSetting("rendering_timeout") * 1000;
   const url = `${baseUrl}${screen.path}`;
 
-  let page;
+  let page: Page;
   try {
     // Reinitialize browser if it's not available or disconnected
     if (!sharedBrowser || !sharedBrowser.connected) {
@@ -146,14 +146,16 @@ export async function takeScreenshot(screen: Screen): Promise<Buffer | null> {
     });
 
     const navigateTimespan = Date.now() - startTime;
-    
+
     // Try to wait for home-assistant element, but continue if it times out
     try {
       await page.waitForSelector("home-assistant", {
         timeout: Math.max(renderingTimeout - navigateTimespan, 1000),
       });
     } catch (selectorError) {
-      console.warn(`home-assistant selector not found, continuing anyway: ${selectorError.message}`);
+      console.warn(
+        `home-assistant selector not found, continuing anyway: ${selectorError.message}`,
+      );
       // Wait a bit for the page to settle
       await setTimeout(2000);
     }
