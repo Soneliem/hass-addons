@@ -1,0 +1,49 @@
+name: Dashboard2EPaper
+version: "1.0.0"
+slug: dashboard2epaper
+description: Capture Home Assistant dashboards and serve optimized images for e-paper displays
+url: "https://github.com/Soneliem/dashboard2epaper/tree/main/dashboard2epaper"
+arch:
+  - armv7
+  - aarch64
+  - amd64
+init: false
+ports:
+  5000/tcp: 5000
+ports_description:
+  5000/tcp: "HTTP API for e-paper device integration"
+options:
+  base_url: "http://192.168.1.203:8123"
+  screens:
+    - id: "dashboard1"
+      path: "/dashboard-dashboard/0?kiosk"
+      update_interval: 60
+      width: 800
+      height: 600
+      rotation: 0
+      scaling: 1.0
+      rendering_delay: 0
+      prefers_color_scheme: "light"
+  access_token: ""
+  language: "en"
+  rendering_timeout: 60
+  browser_launch_timeout: 30
+  ignore_certificate_errors: false
+schema:
+  base_url: "url"
+  screens:
+    - id: "str"
+      path: "str"
+      update_interval: "int(5,)"
+      width: "int(1,)"
+      height: "int(1,)"
+      rotation: "int(0,360)"
+      scaling: "float(0.1,5.0)"
+      rendering_delay: "int(0,)"
+      prefers_color_scheme: "list(light|dark)"
+  access_token: "str"
+  language: "str"
+  rendering_timeout: "int(5,300)"
+  browser_launch_timeout: "int(5,120)"
+  ignore_certificate_errors: "bool"
+image: "ghcr.io/Soneliem/hass-addons-dashboard2epaper-{arch}"

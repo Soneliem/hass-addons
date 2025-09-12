@@ -1,0 +1,29 @@
+{
+  "name": "snodeb-example",
+  "version": "1.0.0",
+  "description": "Example service for snodeb",
+  "type": "module",
+  "private": true,
+  "module": "dist/index.mjs",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.mjs",
+    "build": "pkgroll --minify",
+    "lint": "biome check src/ --fix",
+    "format": "biome format src/ --fix"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.3",
+    "@hono/node-server": "^1.19.1",
+    "@types/node": "^24.3.1",
+    "hono": "^4.9.6",
+    "pkgroll": "^2.15.4",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "puppeteer-core": "^24.19.0",
+    "sharp": "^0.34.3"
+  }
+}
