@@ -4,11 +4,9 @@ slug: dashboard2epaper
 description: Capture Home Assistant dashboards and serve optimized images for e-paper displays
 url: "https://github.com/Soneliem/dashboard2epaper/tree/main/dashboard2epaper"
 arch:
-  - armhf
   - armv7
   - aarch64
   - amd64
-  - i386
 init: false
 ports:
   5000/tcp: 5000
