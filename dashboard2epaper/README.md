@@ -19,7 +19,7 @@ Dashboard2EPaper is a Home Assistant add-on that captures screenshots of your da
 - **HTTP API**: Provides RESTful endpoints for e-paper devices to retrieve processed images
 - **Configurable Updates**: Set custom update intervals with automatic scheduling
 - **Multiple Display Sizes**: Support for various e-paper display resolutions with custom scaling
-\- **Flexible Configuration**: Support for rotation, scaling, rendering delays, and color scheme preferences
+- **Flexible Configuration**: Support for rotation, scaling, rendering delays, and color scheme preferences
 
 ## Installation
 
