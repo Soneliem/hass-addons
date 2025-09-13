@@ -47,3 +47,4 @@ schema:
   browser_launch_timeout: "int(5,120)"
   ignore_certificate_errors: "bool"
 image: "ghcr.io/Soneliem/hass-addons-dashboard2epaper-{arch}"
+watchdog: "http://[HOST]:[PORT:5000]/status"
