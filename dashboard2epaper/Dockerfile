@@ -1,4 +1,4 @@
-ARG BUILD_FROM=alpine
+ARG BUILD_FROM
 # Builder stage
 FROM $BUILD_FROM AS builder
 

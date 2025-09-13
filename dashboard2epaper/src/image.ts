@@ -18,7 +18,7 @@ async function processImage(
   screen: Screen,
 ): Promise<Buffer> {
   const processed = await sharp(Buffer.from(buffer))
-    .rotate(screen.rotation || 0)
+    .rotate(screen.rotation)
     .grayscale()
     .png({ colours: 16 })
     .toBuffer();
@@ -49,12 +49,7 @@ export async function initializeBrowser(): Promise<void> {
     timeout: browserLaunchTimeout,
     headless: true,
     executablePath: "/usr/bin/chromium-browser",
-  });
-
-  // Handle browser disconnection
-  browser.on("disconnected", () => {
-    console.log("Browser disconnected");
-    sharedBrowser = null;
+    // executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
   });
 
   const hassTokens = {
@@ -63,40 +58,30 @@ export async function initializeBrowser(): Promise<void> {
     token_type: "Bearer",
   };
 
-  console.log(`Visiting '${baseUrl}' to login...`);
-  const loginPage = await browser.newPage();
+  console.log("Setting up authentication for all pages...");
 
-  try {
-    await loginPage.goto(baseUrl, {
-      waitUntil: "domcontentloaded",
-      timeout: renderingTimeout,
-    });
+  // Create a temporary page to set up authentication tokens for the entire browser context
+  const setupPage = await browser.newPage();
 
-    // Wait a moment for the page to stabilize
-    await setTimeout(1000);
+  // Set up authentication tokens to be injected on every page load
+  await setupPage.evaluateOnNewDocument(
+    (hassTokens, selectedLanguage) => {
+      localStorage.setItem("hassTokens", hassTokens);
+      localStorage.setItem("selectedLanguage", selectedLanguage);
+    },
+    JSON.stringify(hassTokens),
+    JSON.stringify(language),
+  );
 
-    console.log("Adding authentication entry to browser's local storage...");
+  // Navigate to the base URL to initialize the domain context for localStorage
+  await setupPage.goto(baseUrl, {
+    timeout: renderingTimeout,
+  });
+  await setupPage.close();
 
-    // Check if page is still available before executing JavaScript
-    if (!loginPage.isClosed()) {
-      await loginPage.evaluate(
-        (hassTokens, selectedLanguage) => {
-          localStorage.setItem("hassTokens", hassTokens);
-          localStorage.setItem("selectedLanguage", selectedLanguage);
-        },
-        JSON.stringify(hassTokens),
-        JSON.stringify(language),
-      );
-    }
-  } catch (error) {
-    console.warn("Warning during browser login process:", error.message);
-    // Continue with browser initialization even if there are navigation issues
-  }
-
-  await loginPage.close();
-  console.log("Browser initialized!");
-
+  console.log("Authentication tokens configured for browser context.");
   sharedBrowser = browser;
+  console.log("Browser initialized!");
 }
 
 /**
@@ -110,12 +95,13 @@ export async function takeScreenshot(screen: Screen): Promise<Buffer | null> {
   const renderingTimeout = getSetting("rendering_timeout") * 1000;
   const url = `${baseUrl}${screen.path}`;
 
-  let page: Page;
+  let page: Page | undefined;
   try {
-    // Reinitialize browser if it's not available or disconnected
+    // Check if browser is available, but don't reinitialize during operations
     if (!sharedBrowser || !sharedBrowser.connected) {
-      console.log("Browser not available, reinitializing...");
-      await initializeBrowser();
+      throw new Error(
+        "Browser not available or disconnected. Browser must be initialized before taking screenshots.",
+      );
     }
 
     page = await sharedBrowser.newPage();
@@ -146,19 +132,9 @@ export async function takeScreenshot(screen: Screen): Promise<Buffer | null> {
     });
 
     const navigateTimespan = Date.now() - startTime;
-
-    // Try to wait for home-assistant element, but continue if it times out
-    try {
-      await page.waitForSelector("home-assistant", {
-        timeout: Math.max(renderingTimeout - navigateTimespan, 1000),
-      });
-    } catch (selectorError) {
-      console.warn(
-        `home-assistant selector not found, continuing anyway: ${selectorError.message}`,
-      );
-      // Wait a bit for the page to settle
-      await setTimeout(2000);
-    }
+    await page.waitForSelector("home-assistant", {
+      timeout: Math.max(renderingTimeout - navigateTimespan, 1000),
+    });
 
     await page.addStyleTag({
       content: `
@@ -186,7 +162,7 @@ export async function takeScreenshot(screen: Screen): Promise<Buffer | null> {
     console.error("Failed to render", error);
     return null;
   } finally {
-    if (page) {
+    if (page && !page.isClosed()) {
       await page.close();
     }
   }
@@ -199,7 +175,11 @@ export async function takeScreenshot(screen: Screen): Promise<Buffer | null> {
 export async function closeBrowser(): Promise<void> {
   if (sharedBrowser?.connected) {
     console.log("Closing shared browser...");
-    await sharedBrowser.close();
+    try {
+      await sharedBrowser.close();
+    } catch (error) {
+      console.warn("Error closing browser:", error.message);
+    }
     sharedBrowser = null;
   }
 }

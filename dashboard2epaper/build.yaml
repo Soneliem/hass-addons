@@ -1,0 +1,6 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration#add-on-dockerfile
+labels:
+  org.opencontainers.image.title: "Dashboard2EPaper"
+  org.opencontainers.image.description: "Capture Home Assistant dashboards and serve optimized images for e-paper displays"
+  org.opencontainers.image.source: "https://github.com/Soneliem/hass-addons/tree/main/dashboard2epaper"
+  org.opencontainers.image.licenses: "Apache License 2.0"

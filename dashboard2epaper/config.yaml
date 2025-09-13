@@ -2,7 +2,7 @@ name: Dashboard2EPaper
 version: "1.0.0"
 slug: dashboard2epaper
 description: Capture Home Assistant dashboards and serve optimized images for e-paper displays
-url: "https://github.com/Soneliem/dashboard2epaper/tree/main/dashboard2epaper"
+url: "https://github.com/Soneliem/hass-addons/tree/main/dashboard2epaper"
 arch:
   - armv7
   - aarch64
@@ -11,7 +11,7 @@ init: false
 ports:
   5000/tcp: 5000
 ports_description:
-  5000/tcp: "HTTP API for e-paper device integration"
+  5000/tcp: "HTTP API for e-paper devices"
 options:
   base_url: "http://192.168.1.203:8123"
   screens:
